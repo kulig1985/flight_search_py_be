@@ -1800,3 +1800,376 @@
 2022-06-18 21:21:15 - INFO - store loaded!
 2022-06-18 21:21:17 - INFO - store loaded!
 2022-06-18 21:21:19 - INFO - store loaded!
+2022-06-19 16:47:34 - INFO - Logger set
+2022-06-19 16:47:34 - INFO - Config file load begin
+2022-06-19 16:47:34 - INFO - Config file load end
+2022-06-19 16:48:33 - INFO - Logger set
+2022-06-19 16:48:33 - INFO - Config file load begin
+2022-06-19 16:48:33 - INFO - Config file load end
+2022-06-19 16:48:33 - INFO - get_data_from_api started!
+2022-06-19 16:48:33 - INFO - checking airport: CFU
+2022-06-19 16:48:34 - INFO - 1600772d-3467-438c-6fc2-f0b08a910096 done!
+2022-06-19 16:48:34 - INFO - Result dataframe len: 33
+2022-06-19 16:48:34 - INFO - ---------***--***---------
+2022-06-19 16:48:34 - INFO - checking airport: BCN
+2022-06-19 16:48:36 - INFO - ce95f2e5-ccf9-3315-9ac3-d2c060bbd6ca done!
+2022-06-19 16:48:36 - INFO - Result dataframe len: 300
+2022-06-19 16:48:36 - INFO - ---------***--***---------
+2022-06-19 16:48:36 - INFO - checking airport: RHO
+2022-06-19 16:48:37 - INFO - 02aca80d-0be0-62a4-0c70-3f26eb8e731c done!
+2022-06-19 16:48:37 - INFO - Result dataframe len: 37
+2022-06-19 16:48:37 - INFO - ---------***--***---------
+2022-06-19 16:48:37 - INFO - checking airport: HER
+2022-06-19 16:48:38 - INFO - b9f7ce28-09f5-e376-7003-dac5fe0e2b01 done!
+2022-06-19 16:48:38 - INFO - Result dataframe len: 17
+2022-06-19 16:48:38 - INFO - ---------***--***---------
+2022-06-19 16:48:38 - INFO - checking airport: BRI
+2022-06-19 16:48:40 - INFO - 2b6667eb-abbb-29c8-fe26-cc62955a4bcb done!
+2022-06-19 16:48:40 - INFO - Result dataframe len: 220
+2022-06-19 16:48:40 - INFO - ---------***--***---------
+2022-06-19 16:48:40 - INFO - checking airport: CAG
+2022-06-19 16:48:40 - INFO - b70a8f47-bad0-e1b7-d71c-5d43d0c3f917 done!
+2022-06-19 16:48:40 - INFO - Result dataframe len: 5
+2022-06-19 16:48:40 - INFO - ---------***--***---------
+2022-06-19 16:48:40 - INFO - checking airport: CHQ
+2022-06-19 16:48:41 - INFO - a1b741ef-079d-4ba8-a24c-10f816053c0f done!
+2022-06-19 16:48:41 - INFO - Result dataframe len: 33
+2022-06-19 16:48:41 - INFO - ---------***--***---------
+2022-06-19 16:48:41 - INFO - checking airport: PMI
+2022-06-19 16:48:43 - INFO - 15389213-8579-7257-bf08-4ab5ef0fb23f done!
+2022-06-19 16:48:43 - INFO - Result dataframe len: 104
+2022-06-19 16:48:43 - INFO - ---------***--***---------
+2022-06-19 16:48:43 - INFO - checking airport: ALC
+2022-06-19 16:48:44 - INFO - 806dd005-f1ef-ad3f-61ea-6228d7e0d280 done!
+2022-06-19 16:48:44 - INFO - Result dataframe len: 10
+2022-06-19 16:48:44 - INFO - ---------***--***---------
+2022-06-19 16:48:44 - INFO - checking airport: ZTH
+2022-06-19 16:48:44 - INFO - 56f9ab08-5a1b-6363-702b-9ce2c2adfc2a done!
+2022-06-19 16:48:44 - INFO - Result dataframe len: 10
+2022-06-19 16:48:44 - INFO - ---------***--***---------
+2022-06-19 16:48:44 - INFO - checking airport: JMK
+2022-06-19 16:48:45 - INFO - d2595d14-07a6-ab6e-34c3-5c8c1b847e93 done!
+2022-06-19 16:48:45 - INFO - Result dataframe len: 21
+2022-06-19 16:48:45 - INFO - ---------***--***---------
+2022-06-19 16:48:45 - INFO - checking airport: KGS
+2022-06-19 16:48:46 - INFO - 55a172d3-f309-acf9-a562-f3a05cb921dc done!
+2022-06-19 16:48:46 - INFO - Result dataframe len: 3
+2022-06-19 16:48:46 - INFO - ---------***--***---------
+2022-06-19 16:48:46 - INFO - checking airport: SKG
+2022-06-19 16:48:47 - INFO - 262de415-54f1-a3c9-f80a-c35754f7f8a0 done!
+2022-06-19 16:48:47 - INFO - Result dataframe len: 42
+2022-06-19 16:48:47 - INFO - ---------***--***---------
+2022-06-19 16:48:47 - INFO - final_result dataframe len: 835
+2022-06-19 16:48:47 - INFO - final_result dataframe len after remove > price limit 123
+2022-06-19 16:48:47 - INFO - Final result saved to flight_result_store.h5 on time_key: 2022-06-19-16-48
+2022-06-19 16:48:47 - INFO - Skypicker api call ended!
+2022-06-19 16:48:47 - INFO - Start evaluation of stored data!
+2022-06-19 16:48:47 - INFO - store loaded!
+2022-06-19 16:48:47 - INFO - Full saved df_result size: 123
+2022-06-19 16:48:47 - INFO - param_days: -3
+2022-06-19 16:48:47 - INFO - df_result size after drop not needed days: 123
+2022-06-19 16:48:47 - INFO - Diffs and execute order done!
+2022-06-19 16:48:47 - INFO - SUM Diffs calculation DONE!
+2022-06-19 16:48:47 - INFO - last_run_result_df len: 123
+2022-06-19 17:01:25 - INFO - Logger set
+2022-06-19 17:01:25 - INFO - Config file load begin
+2022-06-19 17:01:25 - INFO - Config file load end
+2022-06-19 17:01:25 - INFO - get_data_from_api started!
+2022-06-19 17:01:25 - INFO - checking airport: CFU
+2022-06-19 17:01:26 - INFO - 170596dc-0a51-4e5b-7b14-f965e0af3a34 done!
+2022-06-19 17:01:26 - INFO - Result dataframe len: 33
+2022-06-19 17:01:26 - INFO - ---------***--***---------
+2022-06-19 17:01:26 - INFO - checking airport: BCN
+2022-06-19 17:01:29 - INFO - 7e95cd02-c439-fa63-db1b-9c2fe465c60c done!
+2022-06-19 17:01:29 - INFO - Result dataframe len: 300
+2022-06-19 17:01:29 - INFO - ---------***--***---------
+2022-06-19 17:01:29 - INFO - checking airport: RHO
+2022-06-19 17:01:29 - INFO - 56d48169-ceab-07c7-4e56-c2cc5c237883 done!
+2022-06-19 17:01:30 - INFO - Result dataframe len: 37
+2022-06-19 17:01:30 - INFO - ---------***--***---------
+2022-06-19 17:01:30 - INFO - checking airport: HER
+2022-06-19 17:01:31 - INFO - 12a4e8d2-e2ef-d9ab-3545-937e3fdc253c done!
+2022-06-19 17:01:31 - INFO - Result dataframe len: 17
+2022-06-19 17:01:31 - INFO - ---------***--***---------
+2022-06-19 17:01:31 - INFO - checking airport: BRI
+2022-06-19 17:01:33 - INFO - 7f63492c-7667-0916-e0ce-7dafafbfa006 done!
+2022-06-19 17:01:33 - INFO - Result dataframe len: 220
+2022-06-19 17:01:33 - INFO - ---------***--***---------
+2022-06-19 17:01:33 - INFO - checking airport: CAG
+2022-06-19 17:01:33 - INFO - f97a2a2d-aacf-f0fc-3556-bf2846f99eb8 done!
+2022-06-19 17:01:33 - INFO - Result dataframe len: 5
+2022-06-19 17:01:33 - INFO - ---------***--***---------
+2022-06-19 17:01:33 - INFO - checking airport: CHQ
+2022-06-19 17:01:34 - INFO - 7331a241-dbdb-6713-ca5e-4a45576a9660 done!
+2022-06-19 17:01:34 - INFO - Result dataframe len: 33
+2022-06-19 17:01:34 - INFO - ---------***--***---------
+2022-06-19 17:01:34 - INFO - checking airport: PMI
+2022-06-19 17:01:35 - INFO - b10cf506-6f5e-20ad-123e-277b2c12a2fb done!
+2022-06-19 17:01:35 - INFO - Result dataframe len: 104
+2022-06-19 17:01:35 - INFO - ---------***--***---------
+2022-06-19 17:01:35 - INFO - checking airport: ALC
+2022-06-19 17:01:36 - INFO - 607069ee-39c3-7dd5-0b37-daa48f5f9647 done!
+2022-06-19 17:01:36 - INFO - Result dataframe len: 10
+2022-06-19 17:01:36 - INFO - ---------***--***---------
+2022-06-19 17:01:36 - INFO - checking airport: ZTH
+2022-06-19 17:01:37 - INFO - 6e173bb4-cfbf-5eb3-a3ed-2c1949f1ef45 done!
+2022-06-19 17:01:37 - INFO - Result dataframe len: 10
+2022-06-19 17:01:37 - INFO - ---------***--***---------
+2022-06-19 17:01:37 - INFO - checking airport: JMK
+2022-06-19 17:01:39 - INFO - 48fd3e14-bd5a-5f68-e5ee-a2d8a39cd322 done!
+2022-06-19 17:01:39 - INFO - Result dataframe len: 21
+2022-06-19 17:01:39 - INFO - ---------***--***---------
+2022-06-19 17:01:39 - INFO - checking airport: KGS
+2022-06-19 17:01:40 - INFO - 8be674c0-37af-b584-a755-4459b37a8691 done!
+2022-06-19 17:01:40 - INFO - Result dataframe len: 3
+2022-06-19 17:01:40 - INFO - ---------***--***---------
+2022-06-19 17:01:40 - INFO - checking airport: SKG
+2022-06-19 17:01:41 - INFO - aed7d546-05d8-1025-c493-b18dd149fd7f done!
+2022-06-19 17:01:41 - INFO - Result dataframe len: 42
+2022-06-19 17:01:41 - INFO - ---------***--***---------
+2022-06-19 17:01:41 - INFO - final_result dataframe len: 835
+2022-06-19 17:01:41 - INFO - final_result dataframe len after remove > price limit 124
+2022-06-19 17:01:41 - INFO - Final result saved to flight_result_store.h5 on time_key: 2022-06-19-17-01
+2022-06-19 17:01:41 - INFO - Skypicker api call ended!
+2022-06-19 17:01:41 - INFO - Start evaluation of stored data!
+2022-06-19 17:01:41 - INFO - store loaded!
+2022-06-19 17:01:41 - INFO - Full saved df_result size: 247
+2022-06-19 17:01:41 - INFO - param_days: -3
+2022-06-19 17:01:41 - INFO - df_result size after drop not needed days: 247
+2022-06-19 17:01:41 - INFO - Diffs and execute order done!
+2022-06-19 17:01:41 - INFO - SUM Diffs calculation DONE!
+2022-06-19 17:01:41 - INFO - last_run_result_df len: 124
+2022-06-19 17:02:08 - INFO - Logger set
+2022-06-19 17:02:08 - INFO - Config file load begin
+2022-06-19 17:02:08 - INFO - Config file load end
+2022-06-19 17:02:08 - INFO - get_data_from_api started!
+2022-06-19 17:02:08 - INFO - checking airport: CFU
+2022-06-19 17:02:09 - INFO - 49896e1b-dbbe-369e-3d8e-1dceab593c3a done!
+2022-06-19 17:02:09 - INFO - Result dataframe len: 33
+2022-06-19 17:02:09 - INFO - ---------***--***---------
+2022-06-19 17:02:09 - INFO - checking airport: BCN
+2022-06-19 17:02:12 - INFO - 26c05a77-bbe3-0ae0-7076-c511f81fde2a done!
+2022-06-19 17:02:12 - INFO - Result dataframe len: 300
+2022-06-19 17:02:12 - INFO - ---------***--***---------
+2022-06-19 17:02:12 - INFO - checking airport: RHO
+2022-06-19 17:02:12 - INFO - 24266148-5c18-2ed5-7f06-b6bb5bdbd1a1 done!
+2022-06-19 17:02:12 - INFO - Result dataframe len: 37
+2022-06-19 17:02:12 - INFO - ---------***--***---------
+2022-06-19 17:02:12 - INFO - checking airport: HER
+2022-06-19 17:02:15 - INFO - 04f16135-5240-c19a-4148-05d9911835b5 done!
+2022-06-19 17:02:15 - INFO - Result dataframe len: 17
+2022-06-19 17:02:15 - INFO - ---------***--***---------
+2022-06-19 17:02:15 - INFO - checking airport: BRI
+2022-06-19 17:02:17 - INFO - 7946087f-a579-e964-04d6-e042f814805e done!
+2022-06-19 17:02:17 - INFO - Result dataframe len: 220
+2022-06-19 17:02:17 - INFO - ---------***--***---------
+2022-06-19 17:02:17 - INFO - checking airport: CAG
+2022-06-19 17:02:18 - INFO - beb0b940-b2ba-4fcb-ee34-0e6460b6501a done!
+2022-06-19 17:02:18 - INFO - Result dataframe len: 5
+2022-06-19 17:02:18 - INFO - ---------***--***---------
+2022-06-19 17:02:18 - INFO - checking airport: CHQ
+2022-06-19 17:02:19 - INFO - bb44bbd8-2248-29ac-fe4b-470926196d87 done!
+2022-06-19 17:02:19 - INFO - Result dataframe len: 33
+2022-06-19 17:02:19 - INFO - ---------***--***---------
+2022-06-19 17:02:19 - INFO - checking airport: PMI
+2022-06-19 17:02:21 - INFO - 71798378-4ead-533c-dc4a-295c7bae412c done!
+2022-06-19 17:02:21 - INFO - Result dataframe len: 104
+2022-06-19 17:02:21 - INFO - ---------***--***---------
+2022-06-19 17:02:21 - INFO - checking airport: ALC
+2022-06-19 17:02:22 - INFO - 1bea58b0-b710-cffe-4ba2-f281072a3740 done!
+2022-06-19 17:02:22 - INFO - Result dataframe len: 10
+2022-06-19 17:02:22 - INFO - ---------***--***---------
+2022-06-19 17:02:22 - INFO - checking airport: ZTH
+2022-06-19 17:02:23 - INFO - cd70c730-7f27-b21b-9d1b-f06e8467da01 done!
+2022-06-19 17:02:23 - INFO - Result dataframe len: 10
+2022-06-19 17:02:23 - INFO - ---------***--***---------
+2022-06-19 17:02:23 - INFO - checking airport: JMK
+2022-06-19 17:02:23 - INFO - 698fe870-b1bf-cdf9-bce4-4fdfd2725ca9 done!
+2022-06-19 17:02:23 - INFO - Result dataframe len: 21
+2022-06-19 17:02:23 - INFO - ---------***--***---------
+2022-06-19 17:02:23 - INFO - checking airport: KGS
+2022-06-19 17:02:24 - INFO - c1e3438e-5ad9-56ce-8ec0-70a05afba47c done!
+2022-06-19 17:02:24 - INFO - Result dataframe len: 3
+2022-06-19 17:02:24 - INFO - ---------***--***---------
+2022-06-19 17:02:24 - INFO - checking airport: SKG
+2022-06-19 17:02:24 - INFO - 6f6f86e6-d986-2ee3-a1ca-52f10d5064dc done!
+2022-06-19 17:02:24 - INFO - Result dataframe len: 42
+2022-06-19 17:02:24 - INFO - ---------***--***---------
+2022-06-19 17:02:24 - INFO - final_result dataframe len: 835
+2022-06-19 17:02:24 - INFO - final_result dataframe len after remove > price limit 124
+2022-06-19 17:02:24 - INFO - Final result saved to flight_result_store.h5 on time_key: 2022-06-19-17-02
+2022-06-19 17:02:24 - INFO - Skypicker api call ended!
+2022-06-19 17:02:24 - INFO - Start evaluation of stored data!
+2022-06-19 17:02:24 - INFO - store loaded!
+2022-06-19 17:02:25 - INFO - Full saved df_result size: 371
+2022-06-19 17:02:25 - INFO - param_days: -3
+2022-06-19 17:02:25 - INFO - df_result size after drop not needed days: 371
+2022-06-19 17:02:25 - INFO - Diffs and execute order done!
+2022-06-19 17:02:25 - INFO - SUM Diffs calculation DONE!
+2022-06-19 17:02:25 - INFO - last_run_result_df len: 124
+2022-06-19 17:02:25 - INFO - last_run_result_df saved as: /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-02.xlsx
+2022-06-19 17:02:25 - INFO - diff_th: -10000 sum_diff_th: -10000
+2022-06-19 17:02:25 - INFO - No routes found to check send actual result!
+2022-06-19 17:02:25 - INFO - send mail invoked with
+2022-06-19 17:02:25 - INFO - sending mail
+2022-06-19 17:02:27 - INFO - mail has sent
+2022-06-19 17:02:27 - INFO - Delete old files!
+2022-06-19 17:02:27 - INFO - /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-02.xlsx is NOT eligible to delete!
+2022-06-19 17:03:53 - INFO - Logger set
+2022-06-19 17:03:53 - INFO - Config file load begin
+2022-06-19 17:03:53 - INFO - Config file load end
+2022-06-19 17:03:53 - INFO - get_data_from_api started!
+2022-06-19 17:03:53 - INFO - checking airport: CFU
+2022-06-19 17:03:54 - INFO - f371f89d-e7d7-5cd1-9769-d73dd9ac384a done!
+2022-06-19 17:03:54 - INFO - Result dataframe len: 30
+2022-06-19 17:03:54 - INFO - ---------***--***---------
+2022-06-19 17:03:54 - INFO - checking airport: BCN
+2022-06-19 17:03:57 - INFO - 200647e3-9a53-6c6c-d373-45a6633e27ca done!
+2022-06-19 17:03:57 - INFO - Result dataframe len: 300
+2022-06-19 17:03:57 - INFO - ---------***--***---------
+2022-06-19 17:03:57 - INFO - checking airport: RHO
+2022-06-19 17:03:58 - INFO - a5cf7718-bebf-2901-8078-48002a8d020b done!
+2022-06-19 17:03:58 - INFO - Result dataframe len: 35
+2022-06-19 17:03:58 - INFO - ---------***--***---------
+2022-06-19 17:03:58 - INFO - checking airport: HER
+2022-06-19 17:03:59 - INFO - cad534c2-44b3-ff7c-69c2-ceaf75d2b70a done!
+2022-06-19 17:03:59 - INFO - Result dataframe len: 14
+2022-06-19 17:03:59 - INFO - ---------***--***---------
+2022-06-19 17:03:59 - INFO - checking airport: BRI
+2022-06-19 17:04:00 - INFO - 52e6d54b-b745-54d3-9f5e-2a35a2c949b7 done!
+2022-06-19 17:04:00 - INFO - Result dataframe len: 187
+2022-06-19 17:04:00 - INFO - ---------***--***---------
+2022-06-19 17:04:00 - INFO - checking airport: CAG
+2022-06-19 17:04:00 - INFO - 86510561-7e60-56e4-c6de-6b0577467b37 done!
+2022-06-19 17:04:00 - INFO - Result dataframe len: 4
+2022-06-19 17:04:00 - INFO - ---------***--***---------
+2022-06-19 17:04:00 - INFO - checking airport: CHQ
+2022-06-19 17:04:01 - INFO - 32a05101-9d1a-92ce-b011-6decbd903743 done!
+2022-06-19 17:04:01 - INFO - Result dataframe len: 30
+2022-06-19 17:04:01 - INFO - ---------***--***---------
+2022-06-19 17:04:01 - INFO - checking airport: PMI
+2022-06-19 17:04:03 - INFO - 8bf6f977-584f-97e4-afb6-c3c5143bb924 done!
+2022-06-19 17:04:03 - INFO - Result dataframe len: 94
+2022-06-19 17:04:03 - INFO - ---------***--***---------
+2022-06-19 17:04:03 - INFO - checking airport: ALC
+2022-06-19 17:04:05 - INFO - 34282b31-15a6-a799-64c2-8419e2474618 done!
+2022-06-19 17:04:05 - INFO - Result dataframe len: 7
+2022-06-19 17:04:05 - INFO - ---------***--***---------
+2022-06-19 17:04:05 - INFO - checking airport: ZTH
+2022-06-19 17:04:07 - INFO - 96145bad-9e7c-ca0f-506f-a161aaa3f931 done!
+2022-06-19 17:04:07 - INFO - Result dataframe len: 10
+2022-06-19 17:04:07 - INFO - ---------***--***---------
+2022-06-19 17:04:07 - INFO - checking airport: JMK
+2022-06-19 17:04:08 - INFO - 4f9d5787-d716-a06e-9476-330e707ae903 done!
+2022-06-19 17:04:08 - INFO - Result dataframe len: 21
+2022-06-19 17:04:08 - INFO - ---------***--***---------
+2022-06-19 17:04:08 - INFO - checking airport: KGS
+2022-06-19 17:04:09 - INFO - c1db8744-d757-7e89-1956-c5b831d98821 done!
+2022-06-19 17:04:09 - INFO - Result dataframe len: 3
+2022-06-19 17:04:09 - INFO - ---------***--***---------
+2022-06-19 17:04:09 - INFO - checking airport: SKG
+2022-06-19 17:04:09 - INFO - 97dba5fd-66e4-88af-29d9-5a0351a196c5 done!
+2022-06-19 17:04:09 - INFO - Result dataframe len: 34
+2022-06-19 17:04:09 - INFO - ---------***--***---------
+2022-06-19 17:04:09 - INFO - final_result dataframe len: 769
+2022-06-19 17:04:09 - INFO - final_result dataframe len after remove > price limit 81
+2022-06-19 17:04:09 - INFO - Final result saved to flight_result_store.h5 on time_key: 2022-06-19-17-03
+2022-06-19 17:04:09 - INFO - Skypicker api call ended!
+2022-06-19 17:04:09 - INFO - Start evaluation of stored data!
+2022-06-19 17:04:09 - INFO - store loaded!
+2022-06-19 17:04:09 - INFO - Full saved df_result size: 81
+2022-06-19 17:04:09 - INFO - param_days: -3
+2022-06-19 17:04:09 - INFO - df_result size after drop not needed days: 81
+2022-06-19 17:04:09 - INFO - Diffs and execute order done!
+2022-06-19 17:04:09 - INFO - SUM Diffs calculation DONE!
+2022-06-19 17:04:09 - INFO - last_run_result_df len: 81
+2022-06-19 17:04:10 - INFO - last_run_result_df saved as: /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-03.xlsx
+2022-06-19 17:04:10 - INFO - diff_th: -10000 sum_diff_th: -10000
+2022-06-19 17:04:10 - INFO - No routes found to check send actual result!
+2022-06-19 17:04:10 - INFO - send mail invoked with
+2022-06-19 17:04:11 - INFO - sending mail
+2022-06-19 17:04:14 - INFO - mail has sent
+2022-06-19 17:04:14 - INFO - Delete old files!
+2022-06-19 17:04:14 - INFO - /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-03.xlsx is NOT eligible to delete!
+2022-06-19 17:04:14 - INFO - /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-02.xlsx is NOT eligible to delete!
+2022-06-19 17:07:42 - INFO - Logger set
+2022-06-19 17:07:42 - INFO - Config file load begin
+2022-06-19 17:07:42 - INFO - Config file load end
+2022-06-19 17:07:42 - INFO - get_data_from_api started!
+2022-06-19 17:07:42 - INFO - checking airport: CFU
+2022-06-19 17:07:43 - INFO - 15046097-a05a-50f2-167c-bae8e72b4ebd done!
+2022-06-19 17:07:43 - INFO - Result dataframe len: 30
+2022-06-19 17:07:43 - INFO - ---------***--***---------
+2022-06-19 17:07:43 - INFO - checking airport: BCN
+2022-06-19 17:07:45 - INFO - 4c28eb67-0017-fca0-bd02-e975bda308a4 done!
+2022-06-19 17:07:45 - INFO - Result dataframe len: 300
+2022-06-19 17:07:45 - INFO - ---------***--***---------
+2022-06-19 17:07:45 - INFO - checking airport: RHO
+2022-06-19 17:07:46 - INFO - 9646859c-4996-0424-a8ad-bdb70fb39357 done!
+2022-06-19 17:07:46 - INFO - Result dataframe len: 35
+2022-06-19 17:07:46 - INFO - ---------***--***---------
+2022-06-19 17:07:46 - INFO - checking airport: HER
+2022-06-19 17:07:47 - INFO - 8d01ef3a-fb26-3d1d-6447-46187b532da9 done!
+2022-06-19 17:07:47 - INFO - Result dataframe len: 14
+2022-06-19 17:07:47 - INFO - ---------***--***---------
+2022-06-19 17:07:47 - INFO - checking airport: BRI
+2022-06-19 17:07:48 - INFO - c9628bc8-5cd7-b788-d653-66e95c7c5c89 done!
+2022-06-19 17:07:48 - INFO - Result dataframe len: 187
+2022-06-19 17:07:48 - INFO - ---------***--***---------
+2022-06-19 17:07:48 - INFO - checking airport: CAG
+2022-06-19 17:07:50 - INFO - 51394aa1-7ea8-da3f-213c-d0e6c9a68bb9 done!
+2022-06-19 17:07:50 - INFO - Result dataframe len: 4
+2022-06-19 17:07:50 - INFO - ---------***--***---------
+2022-06-19 17:07:50 - INFO - checking airport: CHQ
+2022-06-19 17:07:51 - INFO - fa32b3cf-53dd-859b-536a-0036281949b6 done!
+2022-06-19 17:07:51 - INFO - Result dataframe len: 30
+2022-06-19 17:07:51 - INFO - ---------***--***---------
+2022-06-19 17:07:51 - INFO - checking airport: PMI
+2022-06-19 17:07:52 - INFO - 7c0a7d7d-0afa-3d10-4a00-95064147cb69 done!
+2022-06-19 17:07:52 - INFO - Result dataframe len: 94
+2022-06-19 17:07:52 - INFO - ---------***--***---------
+2022-06-19 17:07:52 - INFO - checking airport: ALC
+2022-06-19 17:07:52 - INFO - 1b7fd61f-1eaf-6aa3-0dc2-6992c34381d4 done!
+2022-06-19 17:07:52 - INFO - Result dataframe len: 7
+2022-06-19 17:07:52 - INFO - ---------***--***---------
+2022-06-19 17:07:52 - INFO - checking airport: ZTH
+2022-06-19 17:07:54 - INFO - 4264d433-7fac-3266-e25c-b7af69287626 done!
+2022-06-19 17:07:54 - INFO - Result dataframe len: 10
+2022-06-19 17:07:54 - INFO - ---------***--***---------
+2022-06-19 17:07:54 - INFO - checking airport: JMK
+2022-06-19 17:07:54 - INFO - e8b28420-3acc-5a76-5a38-724fd96399db done!
+2022-06-19 17:07:54 - INFO - Result dataframe len: 21
+2022-06-19 17:07:54 - INFO - ---------***--***---------
+2022-06-19 17:07:54 - INFO - checking airport: KGS
+2022-06-19 17:07:55 - INFO - d5bf27f1-0c56-4cd0-9a89-dd95ad801ce5 done!
+2022-06-19 17:07:55 - INFO - Result dataframe len: 3
+2022-06-19 17:07:55 - INFO - ---------***--***---------
+2022-06-19 17:07:55 - INFO - checking airport: SKG
+2022-06-19 17:07:55 - INFO - 86232fe0-0799-09fe-e98d-f777b1434d65 done!
+2022-06-19 17:07:55 - INFO - Result dataframe len: 34
+2022-06-19 17:07:55 - INFO - ---------***--***---------
+2022-06-19 17:07:55 - INFO - final_result dataframe len: 769
+2022-06-19 17:07:55 - INFO - final_result dataframe len after remove > price limit 81
+2022-06-19 17:07:55 - INFO - Final result saved to flight_result_store.h5 on time_key: 2022-06-19-17-07
+2022-06-19 17:07:55 - INFO - Skypicker api call ended!
+2022-06-19 17:07:55 - INFO - Start evaluation of stored data!
+2022-06-19 17:07:55 - INFO - store loaded!
+2022-06-19 17:07:55 - INFO - Full saved df_result size: 162
+2022-06-19 17:07:55 - INFO - param_days: -3
+2022-06-19 17:07:55 - INFO - df_result size after drop not needed days: 162
+2022-06-19 17:07:55 - INFO - Diffs and execute order done!
+2022-06-19 17:07:55 - INFO - SUM Diffs calculation DONE!
+2022-06-19 17:07:55 - INFO - last_run_result_df len: 81
+2022-06-19 17:07:55 - INFO - last_run_result_df saved as: /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-07.xlsx
+2022-06-19 17:07:55 - INFO - diff_th: -10000 sum_diff_th: -10000
+2022-06-19 17:07:55 - INFO - No routes found to check send actual result!
+2022-06-19 17:07:55 - INFO - send mail invoked with
+2022-06-19 17:07:56 - INFO - sending mail
+2022-06-19 17:07:57 - INFO - mail has sent
+2022-06-19 17:07:57 - INFO - Delete old files!
+2022-06-19 17:07:57 - INFO - /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-07.xlsx is NOT eligible to delete!
+2022-06-19 17:07:57 - INFO - /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-03.xlsx is NOT eligible to delete!
+2022-06-19 17:07:57 - INFO - /data/flight/flight_search_py_be/result/last_run_result_df_2022-06-19-17-02.xlsx is NOT eligible to delete!
+2022-06-19 17:09:06 - INFO - Logger set
+2022-06-19 17:09:06 - INFO - Config file load begin
+2022-06-19 17:09:06 - INFO - Config file load end
