@@ -1,0 +1,7 @@
+/debug_result/
+/result/
+/flight_result_store.h5
+/flight_result_store_api.h5
+.idea
+.DS_Store
+kiwi.cfg
