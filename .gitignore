@@ -6,3 +6,4 @@
 .DS_Store
 kiwi.cfg
 fligh_runner.log
+cron_runner.log
