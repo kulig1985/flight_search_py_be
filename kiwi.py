@@ -17,6 +17,8 @@ import smtplib
 from email.message import EmailMessage
 import shutil
 import platform
+import requests
+from model.flight_result_model import *
 
 
 class KiwiFlightChecker:
@@ -26,8 +28,8 @@ class KiwiFlightChecker:
         self.log = self.load_logger()
         self.config = self.load_config()
 
-        self.depart_after = self.config.get('BASE', "depart_after")
-        self.depart_before = self.config.get('BASE', "depart_before")
+        self.date_from = self.config.get('BASE', "date_from")
+        self.date_to = self.config.get('BASE', "date_from")
         self.nights_in_dst_from = self.config.get('BASE', "nights_in_dst_from")
         self.nights_in_dst_to = self.config.get('BASE', "nights_in_dst_to")
         self.max_stopovers = int(self.config.get('BASE', "max_stopovers"))
@@ -41,6 +43,7 @@ class KiwiFlightChecker:
         self.h5_store_name = self.config.get('BASE', "h5_store_name")
         self.h5_api_name = self.config.get('BASE', "h5_api_name")
         self.result_dir = self.config.get('BASE', 'result_dir')
+        self.api_key = self.config.get('BASE', 'api_key')
 
         now = datetime.now()
         self.time_key_to_file = now.strftime("%Y-%m-%d-%H-%M")
@@ -50,7 +53,7 @@ class KiwiFlightChecker:
             self.log.info("Config file load begin")
             config = ConfigParser()
             if platform.platform()[:platform.platform().index('-')].lower() == 'macos':
-                config_path = '/Users/kuligabor/Documents/KIWI/kiwi_flight_search/kiwi.cfg'
+                config_path = '/Users/kuligabor/Documents/KIWI/flight_search_py_be/kiwi.cfg'
             else:
                 config_path = '/data/flight/flight_search_py_be/kiwi.cfg'
             config.read(config_path, encoding='utf-8')
@@ -98,8 +101,35 @@ class KiwiFlightChecker:
 
         for airport in airports_list:
 
-            self.log.info(f'checking airport: {airport}')
+            base_url = f'https://api.tequila.kiwi.com/v2/search?fly_from=BUD&curr=HUF' \
+                       f'&fly_to={airport}' \
+                       f'&date_from={self.date_from}' \
+                       f'&date_to={self.date_to}' \
+                       f'&nights_in_dst_from={self.nights_in_dst_from}' \
+                       f'&nights_in_dst_to={self.nights_in_dst_to}' \
+                       f'&flight_type=round' \
+                       f'&adults={self.adults}' \
+                       f'&children={self.children}' \
+                       f'&infants={self.infants}' \
+                       f'&adult_hold_bag={self.adult_hold_bag}' \
+                       f'&adult_hand_bag={self.adult_hand_bag}' \
+                       f'&max_stopovers={self.max_stopovers}' \
 
+                #self.log.info(f'checking airport: {airport}')
+
+            self.log.info(base_url)
+
+            r = requests.get(url=base_url, headers={"apikey": self.api_key})
+
+            data = r.json()
+
+            self.log.info(data)
+
+            flight_reesult = FlightResultModel.from_dict(data)
+
+            self.log.debug(flight_reesult)
+
+            '''
             result = api.flights_get(partner='kulig1985kuligflight',
                                      fly_from='BUD',
                                      fly_to=airport,
@@ -113,9 +143,11 @@ class KiwiFlightChecker:
                                      infants=self.infants,
                                      adult_hold_bag=self.adult_hold_bag,
                                      adult_hand_bag=self.adult_hand_bag,
-                                     child_hand_bag=self.child_hand_bag,
+                                     #child_hand_bag=self.child_hand_bag,
                                      curr='HUF',
                                      max_stopovers=self.max_stopovers)
+            
+            
 
             self.log.info(f'{result.search_id} done!')
 
@@ -176,6 +208,7 @@ class KiwiFlightChecker:
 
             else:
                 self.log.info('Response is empty!')
+                self.log.info('---------***--***---------')
 
         final_result = reduce(lambda left, right: pd.concat([left, right]), final_df_result_list)
 
@@ -305,7 +338,22 @@ class KiwiFlightChecker:
             self.log.info('No routes found to check send actual result!')
 
         return file_to_attach_list
+        
+            def delete_old_xlsx(self):
 
+        path = self.result_dir
+        now = time.time()
+
+        self.log.info('Delete old files!')
+
+        for f in os.listdir(path):
+            f = os.path.join(path, f)
+            if (os.stat(f).st_mtime < now - 3 * 86400) & (os.path.isfile(f)) & f.endswith('.xlsx'):
+                self.log.info(f'{f} eligible to delete!')
+                os.remove(f)
+            else:
+                self.log.info(f'{f} is NOT eligible to delete!')
+'''
     def send_mail(self, file_to_attach_list=[]):
 
         self.log.info('send mail invoked with')
@@ -347,20 +395,7 @@ class KiwiFlightChecker:
             smtp.send_message(msg)  # send message
             self.log.info("mail has sent")
 
-    def delete_old_xlsx(self):
 
-        path = self.result_dir
-        now = time.time()
-
-        self.log.info('Delete old files!')
-
-        for f in os.listdir(path):
-            f = os.path.join(path, f)
-            if (os.stat(f).st_mtime < now - 3 * 86400) & (os.path.isfile(f)) & f.endswith('.xlsx'):
-                self.log.info(f'{f} eligible to delete!')
-                os.remove(f)
-            else:
-                self.log.info(f'{f} is NOT eligible to delete!')
 
 if __name__ == "__main__":
 
