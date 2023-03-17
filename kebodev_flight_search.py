@@ -15,6 +15,10 @@ from functools import reduce
 from configparser import ConfigParser
 import platform
 import logging
+import schedule
+import time
+import smtplib
+from email.message import EmailMessage
 
 warnings.filterwarnings('ignore', category=NaturalNameWarning)
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
@@ -110,7 +114,7 @@ class KebodevFlightSearch:
             MOD_DATE = Column(DateTime)
             STAT_ID = Column(Integer)
 
-        new_flight_search_instance = FlightSearchInstance(FSRE_ID=fsre_id)
+        new_flight_search_instance = FlightSearchInstance(FSRE_ID=fsre_id, STAT_ID=0)
         self.session.add(new_flight_search_instance)
         self.session.commit()
 
@@ -132,103 +136,18 @@ class KebodevFlightSearch:
         error_list = []
 
         counter = 1
+
         for airport in airports_list:
 
-            self.log.debug(f'Checking {counter} of {len(airports_list)} - {param_dict["dep_airport"]} to {airport}')
-            counter = counter + 1
+            try:
 
-            error_dict = {}
+                self.check_airport(airport, airports_list, counter, error_list, flight_result_list, param_dict)
+                counter = counter + 1
 
-            base_url = f'https://api.tequila.kiwi.com/v2/search?fly_from={param_dict["dep_airport"]}&curr=HUF' \
-                       f'&fly_to={airport}' \
-                       f'&date_from={param_dict["date_from"]}' \
-                       f'&date_to={param_dict["date_to"]}' \
-                       f'&nights_in_dst_from={param_dict["nights_in_dst_from"]}' \
-                       f'&nights_in_dst_to={param_dict["nights_in_dst_to"]}' \
-                       f'&flight_type=round' \
-                       f'&adults={param_dict["adults"]}' \
-                       f'&children={param_dict["children"]}' \
-                       f'&infants={param_dict["infants"]}' \
-                       f'&adult_hold_bag={param_dict["adult_hold_bag"]}' \
-                       f'&adult_hand_bag={param_dict["adult_hand_bag"]}' \
-                       f'&max_stopovers={param_dict["max_stopovers"]}'
+            except Exception as e:
 
-            self.log.debug(base_url)
-
-            r = requests.get(url=base_url, headers={"apikey": self.api_key})
-
-            #self.log.debug(r.text)
-
-            data = r.json()
-
-            #self.log.debug(f'statuscode: {r.status_code}')
-
-            if r.status_code == 200:
-
-                try:
-                    flight_result = FlightResultModel.from_dict(data)
-
-                    #self.log.debug(len(flight_result.data))
-
-                    if len(flight_result.data) > 0:
-
-                        result_list = []
-
-                        for data in flight_result.data:
-
-                            result_dict = {}
-
-                            result_dict['ID'] = data.id
-                            result_dict['PRICE'] = data.price
-                            result_dict['FLY_DURATION'] = np.round(int(data.duration.departure) / 3600, 2)
-                            result_dict['RET_DURATION'] = np.round(int(data.duration.duration_return) / 3600, 2)
-                            result_dict['TOTAL_DURATION'] = np.round(int(data.duration.total) / 3600, 2)
-
-                            return_type = 0
-                            col_suffix = 'OUT'
-
-                            for route in data.route:
-
-                                if return_type == 1:
-                                    col_suffix = 'BACK'
-
-                                result_dict['ID_' + str(col_suffix)] = route.id
-                                result_dict['DEP_DATE_' + str(col_suffix)] = route.local_departure
-                                result_dict['ARR_DATE_' + str(col_suffix)] = route.local_arrival
-
-                                result_dict['AIRLINE_' + str(col_suffix)] = route.airline
-                                result_dict['CITY_FROM_' + str(col_suffix)] = route.city_from
-                                result_dict['COUNTRY_FROM_' + str(col_suffix)] = data.country_from.name
-                                result_dict['COUNTRY_TO_' + str(col_suffix)] = data.country_to.name
-                                result_dict['CITY_TO_' + str(col_suffix)] = route.city_to
-                                result_dict['FLIGHT_NO_' + str(col_suffix)] = route.flight_no
-
-                                return_type = return_type + 1
-
-                            result_list.append(result_dict)
-                            # log.debug(result_dict)
-
-                        df = pd.DataFrame(result_list)
-                        df['PRICE'] = df['PRICE'].astype(int)
-
-                        self.log.debug(f'Result dataframe len: {len(df)}')
-                        flight_result_list.append(df)
-
-                    else:
-                        self.log.debug('no routes found!')
-
-                except Exception as e:
-                    self.log.error('json parse error:' + str(e))
-                    error_dict['flyTo'] = airport
-                    error_dict['fsin_id'] = param_dict['fsin_id']
-                    error_list.append(error_dict)
-
-            else:
-                self.log.debug("response not 200")
-                error_dict['flyTo'] = airport
-                error_dict['fsin_id'] = param_dict['fsin_id']
-                error_list.append(error_dict)
-
+                self.log.error(f"Exception: {e} at aiport: {airport} wait 3 sec and continoue!")
+                time.sleep(3)
 
         final_result = reduce(lambda left, right: pd.concat([left, right]), flight_result_list)
 
@@ -240,10 +159,104 @@ class KebodevFlightSearch:
             final_result['ARR_DATE_OUT'] = final_result['ARR_DATE_OUT'].dt.strftime('%Y-%m-%d %H:%M')
             final_result['DEP_DATE_BACK'] = final_result['DEP_DATE_BACK'].dt.strftime('%Y-%m-%d %H:%M')
             final_result['ARR_DATE_BACK'] = final_result['ARR_DATE_BACK'].dt.strftime('%Y-%m-%d %H:%M')
+            final_result.drop_duplicates(subset=['ID'], inplace=True)
+
+            self.log.debug(f'final_result len: {len(final_result)}')
 
             final_result.to_sql('FLIGHT_SEARCH_RESULT', self.connection, if_exists='append', index=False)
 
             return error_list
+
+    def check_airport(self, airport, airports_list, counter, error_list, flight_result_list, param_dict):
+        self.log.debug(f'Checking {counter} of {len(airports_list)} - {param_dict["dep_airport"]} to {airport}')
+
+        error_dict = {}
+        base_url = f'https://api.tequila.kiwi.com/v2/search?fly_from={param_dict["dep_airport"]}&curr=HUF' \
+                   f'&fly_to={airport}' \
+                   f'&date_from={param_dict["date_from"]}' \
+                   f'&date_to={param_dict["date_to"]}' \
+                   f'&nights_in_dst_from={param_dict["nights_in_dst_from"]}' \
+                   f'&nights_in_dst_to={param_dict["nights_in_dst_to"]}' \
+                   f'&flight_type=round' \
+                   f'&adults={param_dict["adults"]}' \
+                   f'&children={param_dict["children"]}' \
+                   f'&infants={param_dict["infants"]}' \
+                   f'&adult_hold_bag={param_dict["adult_hold_bag"]}' \
+                   f'&adult_hand_bag={param_dict["adult_hand_bag"]}' \
+                   f'&max_stopovers={param_dict["max_stopovers"]}'
+        self.log.debug(base_url)
+        time.sleep(1)
+        r = requests.get(url=base_url, headers={"apikey": self.api_key})
+        # self.log.debug(r.text)
+        data = r.json()
+        # self.log.debug(f'statuscode: {r.status_code}')
+        if r.status_code == 200:
+
+            try:
+                flight_result = FlightResultModel.from_dict(data)
+
+                # self.log.debug(len(flight_result.data))
+
+                if len(flight_result.data) > 0:
+
+                    result_list = []
+
+                    for data in flight_result.data:
+
+                        result_dict = {}
+
+                        result_dict['FX_RATE'] = flight_result.fx_rate
+                        result_dict['ID'] = data.id
+                        result_dict['PRICE'] = data.price
+                        result_dict['EUR_PRICE'] = np.round(data.price / flight_result.fx_rate, 2)
+                        result_dict['FLY_DURATION'] = np.round(int(data.duration.departure) / 3600, 2)
+                        result_dict['RET_DURATION'] = np.round(int(data.duration.duration_return) / 3600, 2)
+                        result_dict['TOTAL_DURATION'] = np.round(int(data.duration.total) / 3600, 2)
+
+                        return_type = 0
+                        col_suffix = 'OUT'
+
+                        for route in data.route:
+
+                            if return_type == 1:
+                                col_suffix = 'BACK'
+
+                            result_dict['ID_' + str(col_suffix)] = route.id
+                            result_dict['DEP_DATE_' + str(col_suffix)] = route.local_departure
+                            result_dict['ARR_DATE_' + str(col_suffix)] = route.local_arrival
+
+                            result_dict['AIRLINE_' + str(col_suffix)] = route.airline
+                            result_dict['CITY_FROM_' + str(col_suffix)] = route.city_from
+                            result_dict['COUNTRY_FROM_' + str(col_suffix)] = data.country_from.name
+                            result_dict['COUNTRY_TO_' + str(col_suffix)] = data.country_to.name
+                            result_dict['CITY_TO_' + str(col_suffix)] = route.city_to
+                            result_dict['FLIGHT_NO_' + str(col_suffix)] = route.flight_no
+
+                            return_type = return_type + 1
+
+                        result_list.append(result_dict)
+                        # log.debug(result_dict)
+
+                    df = pd.DataFrame(result_list)
+                    df['PRICE'] = df['PRICE'].astype(int)
+
+                    self.log.debug(f'Result dataframe len: {len(df)}')
+                    flight_result_list.append(df)
+
+                else:
+                    self.log.debug('no routes found!')
+
+            except Exception as e:
+                self.log.error('json parse error:' + str(e))
+                error_dict['flyTo'] = airport
+                error_dict['fsin_id'] = param_dict['fsin_id']
+                error_list.append(error_dict)
+
+        else:
+            self.log.debug("response not 200")
+            error_dict['flyTo'] = airport
+            error_dict['fsin_id'] = param_dict['fsin_id']
+            error_list.append(error_dict)
 
     def save_error(self, error_list):
 
@@ -257,6 +270,7 @@ class KebodevFlightSearch:
         self.log.debug('Error info saved!')
 
     def main(self):
+
 
         flight_req_df = self.read_all_fligh_request()
 
@@ -273,30 +287,93 @@ class KebodevFlightSearch:
 
             self.log.debug(f'START processing fsre_id: {fsre_id} NAME: {v["SEARCH_NAME"]} - PARAMS -> {param_dict}')
 
-            airport_list_sql = self.config.get('SQL', "airport_list_sql").format(fsre_id=v['FSRE_ID'])
-            airport_list_df = pd.read_sql(airport_list_sql, self.connection)
+            #airport_list_sql = self.config.get('SQL', "airport_list_sql").format(fsre_id=v['FSRE_ID'])
+            #airport_list_df = pd.read_sql(airport_list_sql, self.connection)
 
-            new_flight_search_instance = self.create_flight_search_instance(fsre_id=fsre_id)
-            param_dict['fsin_id'] = new_flight_search_instance.FSIN_ID
+            try:
 
-            error_list = self.get_data_from_api(param_dict=param_dict, airports_list=list(airport_list_df['IATA']))
+                new_flight_search_instance = self.create_flight_search_instance(fsre_id=fsre_id)
+                param_dict['fsin_id'] = new_flight_search_instance.FSIN_ID
 
-            self.log.debug(f'error_list: {error_list}')
+                error_list = self.get_data_from_api(param_dict=param_dict, airports_list=flight_req_df['IATA'].values[0].split(','))
 
-            self.save_error(error_list)
+                self.log.debug(f'error_list: {error_list}')
 
-            new_flight_search_instance.MOD_DATE = datetime.now()
-            new_flight_search_instance.STAT_ID = 1
-            self.session.merge(new_flight_search_instance)
-            self.session.commit()
+                self.save_error(error_list)
 
-            self.log.debug(f'FINISHED processing fsre_id: {fsre_id}')
+                new_flight_search_instance.MOD_DATE = datetime.now()
+                new_flight_search_instance.STAT_ID = 1
+                self.session.merge(new_flight_search_instance)
+                self.session.commit()
+
+                self.log.debug(f'FINISHED processing fsre_id: {fsre_id}')
+
+                self.log.debug('Sending email!')
+
+                self.send_mail(param_dict=param_dict)
+
+                self.log.debug('Sending email Done!')
+                self.log.debug('Exiting!')
+
+            except Exception as e:
+
+                self.log.error(f'Main exception: {e}')
+
+                new_flight_search_instance.MOD_DATE = datetime.now()
+                new_flight_search_instance.STAT_ID = -1
+                self.session.merge(new_flight_search_instance)
+                self.session.commit()
+                sys.exit(1)
+
+
+    def send_mail(self, param_dict, file_to_attach_list=[]):
+
+        self.log.info('send mail invoked with')
+
+        msg = EmailMessage()
+        my_address = self.config.get('MAIL', 'my_address')
+        app_generated_password = self.config.get('MAIL', 'app_generated_password')
+
+        now = datetime.now()
+        time_key_to_run = now.strftime("%Y-%m-%d-%H-%M")
+
+        msg["Subject"] = 'Fligh result - ' + time_key_to_run
+        msg["From"] = my_address
+        msg["To"] = self.config.get('MAIL', 'mail_to')
+
+        message_text = self.config.get('MAIL', 'message_text')
+
+        msg.set_content(f'{message_text}'
+                        f' - param_dict: {str(param_dict)}')
+
+        if len(file_to_attach_list) > 0:
+
+            for file_name in file_to_attach_list:
+                with open(file_name, "rb") as file:  # open image file
+                    file_data = file.read()
+                    msg.add_attachment(file_data, maintype="application", subtype="xlsx", filename=file_name)
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(my_address, app_generated_password)  # login gmail account
+
+            self.log.info("sending mail")
+            smtp.send_message(msg)  # send message
+            self.log.info("mail has sent")
 
 
 if __name__ == "__main__":
-    flight_search = KebodevFlightSearch()
 
-    flight_search.main()
-    # file_to_attach_list = flight_search.evaluate_data()
-    # flight_search.send_mail(file_to_attach_list)
-    # flight_search.delete_old_xlsx()
+    try:
+        flight_search = KebodevFlightSearch()
+
+        schedule.every().day.at("14:28").do(flight_search.main)
+        schedule.every().day.at("18:00").do(flight_search.main)
+
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
+    except Exception as e:
+        print('main exception :' + str(e))
+        sys.exit(1)
+
