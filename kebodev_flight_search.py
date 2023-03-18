@@ -109,7 +109,7 @@ class KebodevFlightSearch:
 
     def create_flight_search_instance(self, fsre_id):
 
-        Base = declarative_base(bind=self.connection)
+        Base = declarative_base()
 
         class FlightSearchInstance(Base):
             __tablename__ = 'FLIGHT_SEARCH_INSTANCE'
@@ -370,7 +370,7 @@ if __name__ == "__main__":
     try:
         flight_search = KebodevFlightSearch()
 
-        schedule.every().day.at("09:45").do(flight_search.main)
+        schedule.every().day.at("10:18").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
