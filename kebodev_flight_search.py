@@ -172,7 +172,9 @@ class KebodevFlightSearch:
 
             self.log.debug(f'final_result len: {len(final_result)}')
 
-            final_result.to_sql('FLIGHT_SEARCH_RESULT', self.connection, if_exists='append', index=False)
+            final_result.to_sql('FLIGHT_SEARCH_RESULT', self.engine, if_exists='append', index=False)
+
+            self.log.debug(f'final_result saved to DB!')
 
             return error_list
 
@@ -274,7 +276,7 @@ class KebodevFlightSearch:
 
         self.log.debug(f'error_df list size: {len(error_df)}')
 
-        error_df.to_sql('FLIGHT_SEARCH_ERROR', self.connection, if_exists='append', index=False)
+        error_df.to_sql('FLIGHT_SEARCH_ERROR', self.engine, if_exists='append', index=False)
 
         self.log.debug('Error info saved!')
 
@@ -322,6 +324,8 @@ class KebodevFlightSearch:
 
                 self.send_mail(param_dict=param_dict)
 
+                self.session.close()
+
                 self.log.debug('Sending email Done!')
                 self.log.debug('Exiting!')
 
@@ -332,7 +336,10 @@ class KebodevFlightSearch:
                 new_flight_search_instance.MOD_DATE = datetime.now()
                 new_flight_search_instance.STAT_ID = -1
                 self.session.merge(new_flight_search_instance)
+                self.session.flush()
+                self.session.refresh(new_flight_search_instance)
                 self.session.commit()
+                self.session.close()
                 sys.exit(1)
 
 
@@ -376,7 +383,7 @@ if __name__ == "__main__":
     try:
         flight_search = KebodevFlightSearch()
 
-        schedule.every().day.at("10:25").do(flight_search.main)
+        schedule.every().day.at("10:53").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
