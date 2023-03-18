@@ -38,7 +38,7 @@ class KebodevFlightSearch:
         self.db_port = self.config.get('DB', "db_port")
         self.database = self.config.get('DB', "database")
 
-        self.connection = self.create_db_connect()
+        self.connection, self.engine = self.create_db_connect()
         self.session = self.create_db_session()
 
         now = datetime.now()
@@ -92,17 +92,19 @@ class KebodevFlightSearch:
 
         #self.log.debug(connect_string)
 
-        connection = create_engine(connect_string,
+        engine = create_engine(connect_string,
                                    pool_pre_ping=True,
-                                   connect_args={'connect_timeout': 6000}).connect()
+                                   connect_args={'connect_timeout': 6000})
+
+        connection = engine.connect()
 
         self.log.debug("db connect success!")
 
-        return connection
+        return connection, engine
 
     def create_db_session(self):
 
-        Session = sessionmaker(bind=self.connection)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         return session
@@ -120,6 +122,9 @@ class KebodevFlightSearch:
 
         new_flight_search_instance = FlightSearchInstance(FSRE_ID=fsre_id, STAT_ID=0)
         self.session.add(new_flight_search_instance)
+
+        self.session.flush()
+        self.session.refresh(new_flight_search_instance)
         self.session.commit()
 
         return new_flight_search_instance
@@ -297,6 +302,7 @@ class KebodevFlightSearch:
             try:
 
                 new_flight_search_instance = self.create_flight_search_instance(fsre_id=fsre_id)
+                self.log.debug(f'fsin_id: {new_flight_search_instance.FSIN_ID}')
                 param_dict['fsin_id'] = new_flight_search_instance.FSIN_ID
 
                 error_list = self.get_data_from_api(param_dict=param_dict, airports_list=flight_req_df['IATA'].values[0].split(','))
@@ -370,7 +376,7 @@ if __name__ == "__main__":
     try:
         flight_search = KebodevFlightSearch()
 
-        schedule.every().day.at("10:18").do(flight_search.main)
+        schedule.every().day.at("10:48").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
