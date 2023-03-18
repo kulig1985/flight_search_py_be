@@ -376,7 +376,7 @@ if __name__ == "__main__":
     try:
         flight_search = KebodevFlightSearch()
 
-        schedule.every().day.at("10:48").do(flight_search.main)
+        schedule.every().day.at("10:25").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
