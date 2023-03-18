@@ -6,7 +6,7 @@ import warnings
 from model.flight_result_model import *
 from sqlalchemy import create_engine, text
 from sqlalchemy import Column, Integer, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 import numpy as np
@@ -90,7 +90,7 @@ class KebodevFlightSearch:
                          ":" + self.db_pass + "@" + self.db_host + ":" + \
                          self.db_port + "/" + self.database
 
-        self.log.debug(connect_string)
+        #self.log.debug(connect_string)
 
         connection = create_engine(connect_string,
                                    pool_pre_ping=True,
