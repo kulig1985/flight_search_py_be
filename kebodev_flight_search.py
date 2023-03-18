@@ -94,6 +94,8 @@ class KebodevFlightSearch:
                                    pool_pre_ping=True,
                                    connect_args={'connect_timeout': 6000}).connect()
 
+        self.log.debug("db connect success!")
+
         return connection
 
     def create_db_session(self):
