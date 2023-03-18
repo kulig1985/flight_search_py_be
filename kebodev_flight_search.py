@@ -4,7 +4,7 @@ import os
 from tables import NaturalNameWarning
 import warnings
 from model.flight_result_model import *
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy import Column, Integer, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -90,6 +90,8 @@ class KebodevFlightSearch:
                          ":" + self.db_pass + "@" + self.db_host + ":" + \
                          self.db_port + "/" + self.database
 
+        self.log.debug(connect_string)
+
         connection = create_engine(connect_string,
                                    pool_pre_ping=True,
                                    connect_args={'connect_timeout': 6000}).connect()
@@ -125,7 +127,7 @@ class KebodevFlightSearch:
     def read_all_fligh_request(self):
 
         flight_req_sql = self.config.get('SQL', "flight_req_sql")
-        flight_req_df = pd.read_sql(flight_req_sql, self.connection)
+        flight_req_df = pd.read_sql(text(flight_req_sql), self.connection)
         self.log.debug(f'flight_req_df len: {len(flight_req_df)}')
 
         return flight_req_df
@@ -368,7 +370,7 @@ if __name__ == "__main__":
     try:
         flight_search = KebodevFlightSearch()
 
-        schedule.every().day.at("14:28").do(flight_search.main)
+        schedule.every().day.at("09:45").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
