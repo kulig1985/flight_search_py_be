@@ -38,8 +38,8 @@ class KebodevFlightSearch:
         self.db_port = self.config.get('DB', "db_port")
         self.database = self.config.get('DB', "database")
 
-        self.connection, self.engine = self.create_db_connect()
-        self.session = self.create_db_session()
+        self.connection, self.engine = None, None
+        self.session = None
 
         now = datetime.now()
 
@@ -282,6 +282,8 @@ class KebodevFlightSearch:
 
     def main(self):
 
+        self.connection, self.engine = self.create_db_connect()
+        self.session = self.create_db_session()
 
         flight_req_df = self.read_all_fligh_request()
 
