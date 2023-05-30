@@ -309,7 +309,9 @@ class KebodevFlightSearch:
                 self.log.debug(f'fsin_id: {new_flight_search_instance.FSIN_ID}')
                 param_dict['fsin_id'] = new_flight_search_instance.FSIN_ID
 
-                error_list = self.get_data_from_api(param_dict=param_dict, airports_list=flight_req_df['IATA'].values[0].split(','))
+                airport_list = v['IATA'].split(',')
+
+                error_list = self.get_data_from_api(param_dict=param_dict, airports_list=airport_list)
 
                 self.log.debug(f'error_list: {error_list}')
 
@@ -385,12 +387,13 @@ if __name__ == "__main__":
     try:
         flight_search = KebodevFlightSearch()
 
-        schedule.every().day.at("10:53").do(flight_search.main)
+        schedule.every().day.at("05:00").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
             schedule.run_pending()
             time.sleep(1)
+
 
     except Exception as e:
         print('main exception :' + str(e))
