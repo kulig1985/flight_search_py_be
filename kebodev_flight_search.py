@@ -90,6 +90,7 @@ class KebodevFlightSearch:
                          ":" + self.db_pass + "@" + self.db_host + ":" + \
                          self.db_port + "/" + self.database
 
+
         #self.log.debug(connect_string)
 
         engine = create_engine(connect_string,
@@ -387,7 +388,7 @@ if __name__ == "__main__":
     try:
         flight_search = KebodevFlightSearch()
 
-        schedule.every().day.at("05:00").do(flight_search.main)
+        schedule.every().day.at("09:33").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
