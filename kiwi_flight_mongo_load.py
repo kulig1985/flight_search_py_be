@@ -415,6 +415,40 @@ class KiwiFlightMongoLoad:
                 UpdateOne({"_id": d["_id"]}, [{"$set": d}]) for d in batch
             ])
 
+    def send_mail(self, param_dict, file_to_attach_list=[]):
+
+        self.log.info('send mail invoked with')
+
+        msg = EmailMessage()
+        my_address = self.config.get('MAIL', 'my_address')
+        app_generated_password = self.config.get('MAIL', 'app_generated_password')
+
+        now = datetime.now()
+        time_key_to_run = now.strftime("%Y-%m-%d-%H-%M")
+
+        msg["Subject"] = 'Fligh result - ' + time_key_to_run
+        msg["From"] = my_address
+        msg["To"] = self.config.get('MAIL', 'mail_to')
+
+        message_text = self.config.get('MAIL', 'message_text')
+
+        msg.set_content(f'{message_text}'
+                        f' - param_dict: {str(param_dict)}')
+
+        if len(file_to_attach_list) > 0:
+
+            for file_name in file_to_attach_list:
+                with open(file_name, "rb") as file:  # open image file
+                    file_data = file.read()
+                    msg.add_attachment(file_data, maintype="application", subtype="xlsx", filename=file_name)
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(my_address, app_generated_password)  # login gmail account
+
+            self.log.info("sending mail")
+            smtp.send_message(msg)  # send message
+            self.log.info("mail has sent")
+
     def main(self):
 
         self.log.debug('Main process start!')
@@ -436,20 +470,19 @@ class KiwiFlightMongoLoad:
             search_result_to_load_df = new_search_result_df
             self.export_to_load(search_result_to_load_df)
 
-
-
+        self.send_mail(param_dict=params_df)
 
         self.log.debug('Main process finsihed!')
 
 if __name__ == "__main__":
 
-    kiwi_flight_mongo_load = KiwiFlightMongoLoad()
-    kiwi_flight_mongo_load.main()
+    #kiwi_flight_mongo_load = KiwiFlightMongoLoad()
+    #kiwi_flight_mongo_load.main()
 
-'''    try:
+    try:
         flight_search = KiwiFlightMongoLoad()
 
-        schedule.every().day.at("09:33").do(flight_search.main)
+        schedule.every().day.at("06:00").do(flight_search.main)
         schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
@@ -458,4 +491,5 @@ if __name__ == "__main__":
 
     except Exception as e:
         print('main exception :' + str(e))
-        sys.exit(1)'''
+        flight_search.send_mail(param_dict="ERROR: " + str(e))
+        sys.exit(1)
