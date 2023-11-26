@@ -456,7 +456,7 @@ class KiwiFlightMongoLoad:
         airport_df = self.load_airports()
         params_df = self.load_params()
 
-        new_search_result_df = self.load_kiwi_data_thread(airport_df, params_df)
+        new_search_result_df = self.load_kiwi_data(airport_df, params_df)
         existing_search_result_df = self.load_existing_search_result()
 
         if len(existing_search_result_df) > 0:
