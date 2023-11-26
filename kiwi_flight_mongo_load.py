@@ -322,7 +322,7 @@ class KiwiFlightMongoLoad:
             else:
                 self.log.debug('document not found!')
 
-    def export_update_existing_batch_thread(self, df, batch_size=500, num_threads=10):
+    def export_update_existing_batch_thread(self, df, batch_size=10, num_threads=1):
         def process_batch(batch):
             for document in batch:
 
@@ -482,8 +482,8 @@ if __name__ == "__main__":
     try:
         flight_search = KiwiFlightMongoLoad()
 
-        schedule.every().day.at("06:00").do(flight_search.main)
-        schedule.every().day.at("18:00").do(flight_search.main)
+        schedule.every().day.at("07:26").do(flight_search.main)
+        #schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
             schedule.run_pending()
