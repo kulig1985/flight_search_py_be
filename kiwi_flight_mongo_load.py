@@ -42,7 +42,8 @@ class KiwiFlightMongoLoad:
         self.client, \
         self.search_result_collection, \
         self.airport_collection, \
-        self.params_collection = self.connect_to_mongo()
+        self.params_collection, self.final_result_collection = self.connect_to_mongo()
+        self.load_new_data = self.config.get('BASE', "load_new_data")
 
     def load_config(self):
         try:
@@ -92,10 +93,11 @@ class KiwiFlightMongoLoad:
         search_result_collection = db['search_result']
         airport_collection = db['airports']
         params_collection = db['params']
+        final_result_collection = db['final_result']
 
         self.log.debug('mongo connect success!')
 
-        return client, search_result_collection, airport_collection, params_collection
+        return client, search_result_collection, airport_collection, params_collection, final_result_collection
 
     def load_airports(self):
         self.log.debug('load_airports invoked.')
@@ -188,10 +190,12 @@ class KiwiFlightMongoLoad:
             '''for _, airport in airport_df.loc[airport_df['COUNTRY'].isin(
                     ['Italy', 'Spain', 'France', 'Greece'])].head(2).iterrows():'''
             all_airport_len = len(airport_df.loc[airport_df['COUNTRY'].isin(
-                    ['Italy', 'Spain', 'France', 'Greece'])].head(2))
+                    ['Italy', 'Spain', 'France', 'Greece',
+                     'Ireland', 'United Kingdom', 'Cyprus', 'Netherlands'])])
             counter = 0
             for _, airport in airport_df.loc[airport_df['COUNTRY'].isin(
-                    ['Italy', 'Spain', 'France', 'Greece'])].head(2).iterrows():
+                    ['Italy', 'Spain', 'France', 'Greece',
+                     'Ireland', 'United Kingdom', 'Cyprus', 'Netherlands'])].iterrows():
 
                 base_url = f'https://api.tequila.kiwi.com/v2/search?fly_from={param["from_airport"]}&curr=HUF' \
                            f'&fly_to={airport["IATA"]}' \
@@ -207,25 +211,36 @@ class KiwiFlightMongoLoad:
                            f'&adult_hand_bag={param["adult_hand_bag"]}' \
                            f'&max_stopovers={param["max_stopovers"]}'
 
+                #self.log.debug(base_url)
+
                 self.log.debug(f' --search flight to: {airport["IATA"]} in {airport["COUNTRY"]} city {airport["CITY"]}')
 
-                r = requests.get(url=base_url, headers={"apikey": self.api_key})
-                data = r.json()
+
                 try:
+                    r = requests.get(url=base_url, headers={"apikey": self.api_key})
+                    data = r.json()
+                    self.log.debug(f'data len: {len(data["data"])}')
                     result_list_base.extend(data['data'])
                 except Exception as e:
                     self.log.debug(f'Error while extending result_list: {e}')
+
                 counter = counter + 1
-                self.log.debug(f'Done percent: {round((counter / all_airport_len) * 100, 2)}% -> {counter} of {all_airport_len} handled!')
+                self.log.debug(f'Done percent: {round((counter / all_airport_len) * 100, 2)}%'
+                               f' -> {counter} of {all_airport_len} handled!')
 
             for result in result_list_base:
                 mod_result = {}
                 mod_result['searchId'] = result['id']
                 mod_result['routeName'] = result['cityFrom'] + '-' + result['cityTo']
                 result['crDate'] = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+                result['modDate'] = ""
                 result['fxRate'] = result['conversion']['HUF'] / result['conversion']['EUR']
                 result['boolId'] = 1
                 result['paramRef'] = str(param["_id"])
+                result['children'] = param["children"]
+                result['adults'] = param["adults"]
+                result['adult_hold_bag'] = param["adult_hold_bag"]
+                result['adult_hand_bag'] = param["adult_hand_bag"]
                 mod_result['resultList'] = [result]
                 result_list_final.append(mod_result)
 
@@ -263,13 +278,14 @@ class KiwiFlightMongoLoad:
             else:
                 return 'not_same'
 
-        search_result_to_update_df['price_changed'] = search_result_to_update_df.apply(transfor_filter_price_change,1)
+        if len(search_result_to_update_df) > 0:
+            search_result_to_update_df['price_changed'] = search_result_to_update_df.apply(transfor_filter_price_change,1)
 
-        search_result_to_update_df = search_result_to_update_df.loc[
-            search_result_to_update_df['price_changed'] == 'not_same'].copy()
+            search_result_to_update_df = search_result_to_update_df.loc[
+                search_result_to_update_df['price_changed'] == 'not_same'].copy()
 
-        self.log.debug(f'search_result_to_update_df size after filter price not changed: '
-                       f'{len(search_result_to_update_df)}')
+            self.log.debug(f'search_result_to_update_df size after filter price not changed: '
+                           f'{len(search_result_to_update_df)}')
 
         return search_result_to_load_df, search_result_to_update_df
 
@@ -308,7 +324,8 @@ class KiwiFlightMongoLoad:
                         "resultList": {"$each": v['resultList_new']}
                     }
                 }
-                bool_set_operation = {"$set": {"resultList.$[].boolId": 0}}
+                bool_set_operation = {"$set": {"resultList.$[].boolId": 0,
+                                               "resultList.$[].modDate": datetime.now().strftime("%Y.%m.%d %H:%M:%S")}}
 
                 self.search_result_collection.update_one(
                     {"_id": document[0]['_id']},
@@ -331,7 +348,8 @@ class KiwiFlightMongoLoad:
                         "resultList": {"$each": document['resultList_new']}
                     }
                 }
-                bool_set_operation = {"$set": {"resultList.$[].boolId": 0}}
+                bool_set_operation = {"$set": {"resultList.$[].boolId": 0,
+                                               "resultList.$[].modDate": datetime.now().strftime("%Y.%m.%d %H:%M:%S")}}
 
                 # Your existing code to modify the document in memory
                 document["resultList"] = document["resultList"] + document['resultList_new']
@@ -415,6 +433,243 @@ class KiwiFlightMongoLoad:
                 UpdateOne({"_id": d["_id"]}, [{"$set": d}]) for d in batch
             ])
 
+    def load_final_result_aggregate(self):
+
+        self.log.debug(f'load_final_result_aggregate invoked..')
+
+        final_result_pipeline = [
+                            {
+                                '$unwind': {
+                                    'path': '$resultList'
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': {
+                                        'searchId': '$searchId',
+                                        'routeName': '$routeName'
+                                    },
+                                    'items': {
+                                        '$push': {
+                                            'searchId': '$searchId',
+                                            'cityFrom': '$resultList.cityFrom',
+                                            'cityTo': '$resultList.cityTo',
+                                            'fxPrice': {
+                                                '$round': '$resultList.conversion.EUR'
+                                            },
+                                            'start': {
+                                                '$dateToString': {
+                                                    'format': '%Y-%m-%d %H:%M',
+                                                    'date': {
+                                                        '$dateFromString': {
+                                                            'dateString': '$resultList.local_departure',
+                                                            'format': '%Y-%m-%dT%H:%M:%S.%LZ'
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            'end': {
+                                                '$dateToString': {
+                                                    'format': '%Y-%m-%d %H:%M',
+                                                    'date': {
+                                                        '$dateFromString': {
+                                                            'dateString': {
+                                                                '$arrayElemAt': [
+                                                                    '$resultList.route.local_departure', -1
+                                                                ]
+                                                            },
+                                                            'format': '%Y-%m-%dT%H:%M:%S.%LZ'
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            'days': {
+                                                '$toString': '$resultList.nightsInDest'
+                                            },
+                                            'price': {
+                                                '$round': '$resultList.price'
+                                            },
+                                            'flightNumber': {
+                                                '$size': '$resultList.route'
+                                            },
+                                            'fxRate': {
+                                                '$round': '$resultList.fxRate'
+                                            },
+                                            'crDate': '$resultList.crDate',
+                                            'boolId': '$resultList.boolId',
+                                            'deepLink': '$resultList.deep_link',
+                                            'children': '$resultList.children',
+                                            'adults': '$resultList.adults',
+                                            'items': {
+                                                '$map': {
+                                                    'input': '$resultList.route',
+                                                    'as': 'item',
+                                                    'in': {
+                                                        'text': {
+                                                            '$concat': [
+                                                                '$$item.cityFrom', ' - ', '$$item.cityTo', ' - ', {
+                                                                    '$dateToString': {
+                                                                        'format': '%Y-%m-%d %H:%M',
+                                                                        'date': {
+                                                                            '$dateFromString': {
+                                                                                'dateString': '$$item.local_departure',
+                                                                                'format': '%Y-%m-%dT%H:%M:%S.%LZ'
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }, ' - ', '$$item.airline'
+                                                            ]
+                                                        },
+                                                        'flightNo': '$$item.flight_no'
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    '_id': 0,
+                                    'searchId': '$_id.searchId',
+                                    'text': '$_id.routeName',
+                                    'items': 1
+                                }
+                            }, {
+                                '$addFields': {
+                                    'items': {
+                                        '$map': {
+                                            'input': {
+                                                '$range': [
+                                                    0, {
+                                                        '$size': '$items'
+                                                    }
+                                                ]
+                                            },
+                                            'as': 'index',
+                                            'in': {
+                                                '$mergeObjects': [
+                                                    {
+                                                        '$arrayElemAt': [
+                                                            '$items', '$$index'
+                                                        ]
+                                                    }, {
+                                                        'isCheaper': {
+                                                            '$cond': {
+                                                                'if': {
+                                                                    '$and': [
+                                                                        {
+                                                                            '$eq': [
+                                                                                '$$index', {
+                                                                                    '$subtract': [
+                                                                                        {
+                                                                                            '$size': '$items'
+                                                                                        }, 1
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }, {
+                                                                            '$lt': [
+                                                                                {
+                                                                                    '$arrayElemAt': [
+                                                                                        '$items.fxPrice', '$$index'
+                                                                                    ]
+                                                                                }, {
+                                                                                    '$arrayElemAt': [
+                                                                                        '$items.fxPrice', {
+                                                                                            '$subtract': [
+                                                                                                '$$index', 1
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                'then': 1,
+                                                                'else': 0
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }, {
+                                '$project': {
+                                    'items': {
+                                        '$filter': {
+                                            'input': '$items',
+                                            'as': 'item',
+                                            'cond': {
+                                                '$eq': [
+                                                    '$$item.boolId', 1
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    'searchId': 1,
+                                    'text': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'items.price': 1
+                                }
+                            }, {
+                                '$group': {
+                                    '_id': '$text',
+                                    'items': {
+                                        '$push': {
+                                            'searchId': '$searchId',
+                                            'cityFrom': '$cityFrom',
+                                            'cityTo': '$cityTo',
+                                            'fxPrice': '$fxPrice',
+                                            'start': '$start',
+                                            'end': '$end',
+                                            'days': '$days',
+                                            'price': '$price',
+                                            'flightNumber': '$flightNumber',
+                                            'fxRate': '$fxRate',
+                                            'crDate': '$crDate',
+                                            'boolId': '$boolId',
+                                            'deepLink': '$deepLink',
+                                            'isCheaper': '$isCheaper',
+                                            'items': '$items'
+                                        }
+                                    }
+                                }
+                            }, {
+                                '$addFields': {
+                                    'text': '$_id',
+                                    'items': '$items'
+                                }
+                            }, {
+                                '$project': {
+                                    '_id': 0,
+                                    'text': 1,
+                                    'items': 1
+                                }
+                            }, {
+                                '$sort': {
+                                    'items.items.price': 1
+                                }
+                            }
+                        ]
+
+        self.final_result_collection.delete_many({})
+
+        search_result_cursor = self.search_result_collection.aggregate(final_result_pipeline, allowDiskUse=True)
+
+        search_result = list(search_result_cursor)
+
+        self.log.debug(f'search_result len: {len(search_result)}')
+
+        if len(search_result) > 0:
+            self.final_result_collection.insert_many(search_result)
+
+        self.log.debug(f'load_final_result_aggregate done..')
+
+
     def send_mail(self, param_dict, file_to_attach_list=[]):
 
         self.log.info('send mail invoked with')
@@ -453,24 +708,32 @@ class KiwiFlightMongoLoad:
 
         self.log.debug('Main process start!')
 
-        airport_df = self.load_airports()
-        params_df = self.load_params()
+        if self.load_new_data == '1':
+            self.log.debug('new data loading enabled')
+            airport_df = self.load_airports()
+            params_df = self.load_params()
 
-        new_search_result_df = self.load_kiwi_data(airport_df, params_df)
-        existing_search_result_df = self.load_existing_search_result()
+            new_search_result_df = self.load_kiwi_data(airport_df, params_df)
+            existing_search_result_df = self.load_existing_search_result()
 
-        if len(existing_search_result_df) > 0:
-            search_result_to_load_df, \
-            search_result_to_update_df = self.transfer_define_old_and_existing_data(existing_search_result_df,
-                                                                                    new_search_result_df)
-            self.export_to_load(search_result_to_load_df)
-            #self.export_update_existing(search_result_to_update_df)
-            self.export_update_existing_batch(search_result_to_update_df, 500)
+            if len(existing_search_result_df) > 0:
+                search_result_to_load_df, \
+                search_result_to_update_df = self.transfer_define_old_and_existing_data(existing_search_result_df,
+                                                                                        new_search_result_df)
+                self.export_to_load(search_result_to_load_df)
+                #self.export_update_existing(search_result_to_update_df)
+                if len(search_result_to_update_df) > 0:
+                    self.export_update_existing_batch(search_result_to_update_df, 500)
+            else:
+                search_result_to_load_df = new_search_result_df
+                self.export_to_load(search_result_to_load_df)
+
+            self.send_mail(param_dict=params_df)
+
         else:
-            search_result_to_load_df = new_search_result_df
-            self.export_to_load(search_result_to_load_df)
+            self.log.debug('new data loading disabled')
 
-        self.send_mail(param_dict=params_df)
+        self.load_final_result_aggregate()
 
         self.log.debug('Main process finsihed!')
 
@@ -482,7 +745,7 @@ if __name__ == "__main__":
     try:
         flight_search = KiwiFlightMongoLoad()
 
-        schedule.every().day.at("07:26").do(flight_search.main)
+        schedule.every().day.at("17:14").do(flight_search.main)
         #schedule.every().day.at("18:00").do(flight_search.main)
 
         while True:
@@ -493,3 +756,4 @@ if __name__ == "__main__":
         print('main exception :' + str(e))
         flight_search.send_mail(param_dict="ERROR: " + str(e))
         sys.exit(1)
+
