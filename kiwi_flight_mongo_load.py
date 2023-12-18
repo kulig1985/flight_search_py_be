@@ -671,6 +671,21 @@ class KiwiFlightMongoLoad:
 
         self.log.debug(f'load_final_result_aggregate done..')
 
+    def remove_all_old_search_result(self):
+        self.log.debug('remove_all_old_search_result invoked!!')
+
+        query = {'resultList.boolId': 0}
+
+        update_operation = {
+            '$pull': {
+                'resultList': {'boolId': 0}
+            }
+        }
+
+        self.search_result_collection.update_many(query, update_operation)
+
+        self.log.debug('remove_all_old_search_result done!!')
+
 
     def send_mail(self, param_dict, file_to_attach_list=[]):
 
@@ -716,6 +731,7 @@ class KiwiFlightMongoLoad:
             params_df = self.load_params()
 
             new_search_result_df = self.load_kiwi_data(airport_df, params_df)
+            self.remove_all_old_search_result()
             existing_search_result_df = self.load_existing_search_result()
 
             if len(existing_search_result_df) > 0:
