@@ -250,7 +250,9 @@ class KiwiFlightMongoLoad:
 
     def load_existing_search_result(self):
         self.log.debug('load_existing_search_result invoked.')
-        existing_search_result_df = pd.DataFrame(list(self.search_result_collection.find()))
+        existing_cursor = self.search_result_collection.find()
+        self.log.debug('existing_cursor found!')
+        existing_search_result_df = pd.DataFrame(list(existing_cursor))
         self.log.debug(f'existing_search_result_df len: {len(existing_search_result_df)}')
         return existing_search_result_df
 
